@@ -13,6 +13,8 @@ pd.set_option('display.max_rows', 30*1000)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 500)
 
+filepath = os.path.dirname(sys.argv[0])
+
 def PPrint():
 	pass
 # # review = list()
@@ -37,7 +39,7 @@ class Destroyer(object):
 
 
 
-		
+
 class TweetsParser(object):
 	def __init__(self):
 		self.tweets = self.get_tweets()
@@ -46,21 +48,22 @@ class TweetsParser(object):
 		self.IDs = list()
 
 	def get_tweets(self):
-		
+
 		try:
-			with io.open('./tweet.js', mode='r', encoding='utf-8') as tweetjs_file:
+			with io.open(filepath + '/tweet.js', mode='r', encoding='utf-8') as tweetjs_file:
 				tweets = json.loads(tweetjs_file.read()[25:])
 		except FileNotFoundError:
-			print()
-			print ("Can't find tweet.js file.")
-			print ("Please place the tweet.js file in the root directory")
+			print(filepath)
+			print (" -> Can't find tweet.js file.")
+			print (" -> Please place the tweet.js file in the root directory")
+			print('\n\n\n\n\n\n')
 			sys.exit()
 			pass
 
 		return tweets
 
 	def like_filter(self):
-		
+
 		likes = int (input(4*' '+'Enter Likes Limit: '))
 
 		for tweet in self.tweets:
@@ -95,7 +98,7 @@ class TweetsParser(object):
 
 		likes_limit = int (input(4*' '+'Enter Likes Limit: '))
 		retweet_limit = int(input(4*' '+'Enter Retweets Limit: '))
-		
+
 		for tweet in self.tweets:
 			if int(tweet.get('favorite_count')) < likes_limit and int(tweet.get('favorite_count')) < retweet_limit:
 				tweetD = dict()
@@ -112,7 +115,7 @@ class TweetsParser(object):
 		self.tweets_df = pd.DataFrame(self.review)
 
 	def make_csv(self):
-		self.tweets_df.to_csv('./review.csv')
+		self.tweets_df.to_csv(filepath + '/review.csv')
 
 	def delete_tweets(self):
 		s = Destroyer()
@@ -128,29 +131,37 @@ class TweetsParser(object):
 			sys.exit()
 
 		# Compile all the ids to be deleted in a list
-		self.IDs = tp.tweets_df['ID'].tolist()
+		# self.IDs = tp.tweets_df['ID'].tolist()
+		self.IDs = ['1202542001465507840', '1202524122552688640', '1202524067968016384','1202523895754055681', '1202540509031518208', '1202540488340967424', '1202540529508143110', '1202540529508143110']
 
 		print_line()
-		
-		for id in self.IDs[:10]:
-			
-			tweet_text = s.api.GetStatus(id).AsDict().get('text').replace('\n', ' \\n ')
-			
-			print(3*' ', 'Deleteing:', tweet_text[:65], end='\r', flush=True)
+
+		for ID in self.IDs:
+
+			try:
+				tweet_text = s.api.GetStatus(ID).AsDict().get('text').replace('\n', ' \\n ')
+				print(3	*' ', 'Deleteing:', tweet_text[:65], end='\r', flush=True)
+				s.api.DestroyStatus(ID)
+
+			except TwitterError as e:
+				print(3*' ', 'Error:', e, 'ID:', ID, end='\r', flush=True)
+				sleep(2)
+				print(100*' ', end='\r', flush=True)
+
 			sleep(2)
 
 		print()
 
 if __name__=='__main__':
 	os.system('clear')
-	
+
 	print(3*' ', 'Reading Tweets.js File . . .')
 	print_line()
 
 	tp = TweetsParser()
 
 	print(' -> Note: Every tweet below the specified limit will be deleted.\n')
-	
+
 	while True:
 		print(3*' ', 'Do you want to filter based on:')
 		print(3*' ', ' a. Likes')
@@ -173,10 +184,10 @@ if __name__=='__main__':
 
 		elif option.lower() == 'c':
 			print_line()
-			
+
 			tp.both_filter()
 			break
-		
+
 		else:
 			print(3*' ', 'Invalid input. Try typing "a", "b" or "c".\n')
 
@@ -188,7 +199,7 @@ if __name__=='__main__':
 	print(f' -> "review.csv" created with: {len(tp.review)} tweets.')
 	print_line()
 
-	
+
 
 	while True:
 		choice1 = input(4*' ' + 'Have you reviewed "review.csv" (yes/no): ')
@@ -201,7 +212,7 @@ if __name__=='__main__':
 	print_line()
 	print(' -> Warning: This process is irreversible. Proceed with caution.\n')
 
-	
+
 
 	while True:
 		choice2 = input(4*' '+'Are you sure, you want to delete all the tweets in "review.csv" (yes/no): ')
@@ -210,18 +221,18 @@ if __name__=='__main__':
 			print_line()
 
 			tp.delete_tweets()
-			
+
 			print_line()
 			print(22*' ', f'Successfully deleted: {len(tp.review)} Tweets.')
 			print_line()
-			
+
 			break
 		elif choice2.lower() == 'no':
-			
+
 			print_line()
 			print(3*' ', 'Wise Decision ;-)')
 			print_line()
-			
+
 			break
 		else:
 			print(3*' ', 'Invalid input. Try again.\n')
