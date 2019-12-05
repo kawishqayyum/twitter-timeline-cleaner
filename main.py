@@ -63,7 +63,9 @@ class TweetsParser(object):
 		try:
 			likes = int (input(4*' '+'Enter Likes Limit: '))
 		except ValueError:
-			print("Please input an integer.")
+			print("Error: Please enter a digit.")
+			print("Please restart the program.")
+			print("Exiting")
 			print('\n\n\n')
 			sys.exit()
 
@@ -85,7 +87,9 @@ class TweetsParser(object):
 			retweet_limit = int(input(4*' '+'Enter Retweets Limit: '))
 
 		except ValueError:
-			print("Please input an integer.")
+			print("Error: Please enter a digit.")
+			print("Please restart the program.")
+			print("Exiting")
 			print('\n\n\n')
 			sys.exit()
 
@@ -108,7 +112,9 @@ class TweetsParser(object):
 			retweet_limit = int(input(4*' '+'Enter Retweets Limit: '))
 
 		except ValueError:
-			print("Please input an integer.")
+			print("Error: Please enter a digit.")
+			print("Please restart the program.")
+			print("Exiting")
 			print('\n\n\n')
 			sys.exit()
 
@@ -143,7 +149,7 @@ class TweetsParser(object):
 			print(' -> Logged in as', s.get_name())
 		else:
 			print(' -> Login Failed!')
-			print(' -> Bad credentials in user_data.py.')
+			print(' -> Bad credentials.')
 			print(' -> Please re-check the credentials and Try again.')
 			print_line()
 			sys.exit()
