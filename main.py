@@ -6,7 +6,6 @@ import os
 import sys
 
 from twitter.error import TwitterError
-from user_data import *
 from time import sleep
 
 pd.set_option('display.max_rows', 30*1000)
@@ -23,7 +22,7 @@ def print_line():
 	print(3*' ', 77*'_', '\n')
 
 class Destroyer(object):
-	def __init__(self):
+	def __init__(self, api_key, api_secret_key, access_token, access_secret_token):
 		self.api = twitter.Api(consumer_key=api_key, consumer_secret=api_secret_key, access_token_key=access_token, access_token_secret=access_secret_token)
 
 
@@ -36,8 +35,6 @@ class Destroyer(object):
 
 	def get_name(self):
 		return self.api.VerifyCredentials().AsDict().get('screen_name')
-
-
 
 
 class TweetsParser(object):
@@ -63,8 +60,12 @@ class TweetsParser(object):
 		return tweets
 
 	def like_filter(self):
-
-		likes = int (input(4*' '+'Enter Likes Limit: '))
+		try:
+			likes = int (input(4*' '+'Enter Likes Limit: '))
+		except ValueError:
+			print("Please input an integer.")
+			print('\n\n\n')
+			sys.exit()
 
 		for tweet in self.tweets:
 			if int(tweet.get('favorite_count')) < likes:
@@ -80,7 +81,13 @@ class TweetsParser(object):
 
 	def retweet_filter(self):
 
-		retweet_limit = int(input(4*' '+'Enter Retweets Limit: '))
+		try:
+			retweet_limit = int(input(4*' '+'Enter Retweets Limit: '))
+
+		except ValueError:
+			print("Please input an integer.")
+			print('\n\n\n')
+			sys.exit()
 
 		for tweet in self.tweets:
 			if int(tweet.get('favorite_count')) < retweet_limit:
@@ -96,8 +103,14 @@ class TweetsParser(object):
 
 	def both_filter(self):
 
-		likes_limit = int (input(4*' '+'Enter Likes Limit: '))
-		retweet_limit = int(input(4*' '+'Enter Retweets Limit: '))
+		try:
+			likes_limit = int (input(4*' '+'Enter Likes Limit: '))
+			retweet_limit = int(input(4*' '+'Enter Retweets Limit: '))
+
+		except ValueError:
+			print("Please input an integer.")
+			print('\n\n\n')
+			sys.exit()
 
 		for tweet in self.tweets:
 			if int(tweet.get('favorite_count')) < likes_limit and int(tweet.get('favorite_count')) < retweet_limit:
@@ -118,7 +131,12 @@ class TweetsParser(object):
 		self.tweets_df.to_csv(filepath + '/review.csv')
 
 	def delete_tweets(self):
-		s = Destroyer()
+		api_key = input("Please enter API key: ")
+		api_secret_key = input("Please enter API secret key: ")
+		access_token = input("Please enter Access token: ")
+		access_secret_token = input("Please enter Access token secret: ")
+
+		s = Destroyer(api_key, api_secret_key, access_token, access_secret_token)
 
 		print(' -> Connecting with Twitter . . .')
 		if s.verify():
@@ -140,13 +158,11 @@ class TweetsParser(object):
 
 			try:
 				tweet_text = s.api.GetStatus(ID).AsDict().get('text').replace('\n', ' \\n ')
-				print(3	*' ', 'Deleteing:', tweet_text[:65], end='\r', flush=True)
+				print(3	*' ', 'Deleteing:', tweet_text[:65])
 				s.api.DestroyStatus(ID)
 
-			except TwitterError as e:
-				print(3*' ', 'Error:', e, 'ID:', ID, end='\r', flush=True)
-				sleep(2)
-				print(100*' ', end='\r', flush=True)
+			except TwitterError:
+				print(3*' ', 'Error: Tweet not found:', ID, )
 
 			sleep(2)
 
