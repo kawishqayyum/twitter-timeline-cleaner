@@ -17,6 +17,9 @@ def PPrint():
 	pass
 # # review = list()
 
+def print_line():
+	print(3*' ', 77*'_', '\n')
+
 class Destroyer(object):
 	def __init__(self):
 		self.api = twitter.Api(consumer_key=api_key, consumer_secret=api_secret_key, access_token_key=access_token, access_token_secret=access_secret_token)
@@ -118,12 +121,16 @@ class TweetsParser(object):
 		if s.verify():
 			print(' -> Logged in as', s.get_name())
 		else:
-			print('Login Failed!')
+			print(' -> Login Failed!')
+			print(' -> Bad credentials in user_data.py.')
+			print(' -> Please re-check the credentials and Try again.')
+			print_line()
+			sys.exit()
 
 		# Compile all the ids to be deleted in a list
 		self.IDs = tp.tweets_df['ID'].tolist()
 
-		print(3*' ', 77*'_', '\n')
+		print_line()
 		
 		for id in self.IDs[:10]:
 			
@@ -138,7 +145,7 @@ if __name__=='__main__':
 	os.system('clear')
 	
 	print(3*' ', 'Reading Tweets.js File . . .')
-	print(3*' ', 77*'_', '\n')
+	print_line()
 
 	tp = TweetsParser()
 
@@ -153,19 +160,19 @@ if __name__=='__main__':
 		option = input(4*' '+'Select Option (a, b or c): ')
 
 		if option.lower() == 'a':
-			print(3*' ', 77*'_', '\n')
+			print_line()
 
 			tp.like_filter()
 			break
 
 		elif option.lower() == 'b':
-			print(3*' ', 77*'_', '\n')
+			print_line()
 
 			tp.retweet_filter()
 			break
 
 		elif option.lower() == 'c':
-			print(3*' ', 77*'_', '\n')
+			print_line()
 			
 			tp.both_filter()
 			break
@@ -179,7 +186,9 @@ if __name__=='__main__':
 
 	print()
 	print(f' -> "review.csv" created with: {len(tp.review)} tweets.')
-	print(3*' ', 77*'_', '\n')
+	print_line()
+
+	
 
 	while True:
 		choice1 = input(4*' ' + 'Have you reviewed "review.csv" (yes/no): ')
@@ -189,27 +198,29 @@ if __name__=='__main__':
 		else:
 			print(' -> Please review "review.csv" to continue. \n')
 
-	print(3*' ', 77*'_', '\n')
+	print_line()
 	print(' -> Warning: This process is irreversible. Proceed with caution.\n')
+
+	
 
 	while True:
 		choice2 = input(4*' '+'Are you sure, you want to delete all the tweets in "review.csv" (yes/no): ')
 
 		if choice2.lower() == 'yes':
-			print(3*' ', 77*'_', '\n')
+			print_line()
 
 			tp.delete_tweets()
 			
-			print(3*' ', 77*'_', '\n')
+			print_line()
 			print(22*' ', f'Successfully deleted: {len(tp.review)} Tweets.')
-			print(3*' ', 77*'_', '\n')
+			print_line()
 			
 			break
 		elif choice2.lower() == 'no':
 			
-			print(3*' ', 77*'_', '\n')
+			print_line()
 			print(3*' ', 'Wise Decision ;-)')
-			print(3*' ', 77*'_', '\n')
+			print_line()
 			
 			break
 		else:
