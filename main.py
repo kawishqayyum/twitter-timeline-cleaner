@@ -154,11 +154,28 @@ class TweetsParser(object):
 			print_line()
 			sys.exit()
 
-		# Compile all the ids to be deleted in a list
-		# self.IDs = tp.tweets_df['ID'].tolist()
-		self.IDs = ['1202542001465507840', '1202524122552688640', '1202524067968016384','1202523895754055681', '1202540509031518208', '1202540488340967424', '1202540529508143110', '1202540529508143110']
+		try:
+			# Compile all the ids to be deleted in a list
+			self.IDs = tp.tweets_df['ID'].tolist()
+			# self.IDs = ['1202542001465507840', '1202524122552688640', '1202524067968016384','1202523895754055681', '1202540509031518208', '1202540488340967424', '1202540529508143110', '1202540529508143110']
+		except KeyError:
+			print("Empty list.")
+			print("Please restart the program with different values.")
+			print("Exiting")
+			print('\n\n\n')
+			sys.exit()
 
 		print_line()
+
+		one_last_time = input(4*" " + "One last time, Do you wish to continue (yes/no): ")
+
+		print_line()
+
+		if one_last_time.lower != 'yes':
+			print(3*' ', 'Cool!')
+			print(3* " ", "Exiting now")
+			print('\n\n\n\n')
+			sys.exit()
 
 		for ID in self.IDs:
 
