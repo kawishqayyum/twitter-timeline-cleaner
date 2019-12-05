@@ -5,6 +5,10 @@ import pandas as pd
 import os
 import sys
 
+from twitter.error import TwitterError
+from user_data import *
+from time import sleep
+
 pd.set_option('display.max_rows', 30*1000)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 500)
@@ -13,14 +17,30 @@ def PPrint():
 	pass
 # # review = list()
 
-def delete_tweets():
-	pass
+class Destroyer(object):
+	def __init__(self):
+		self.api = twitter.Api(consumer_key=api_key, consumer_secret=api_secret_key, access_token_key=access_token, access_token_secret=access_secret_token)
 
+
+	def verify(self):
+		try:
+			self.api.VerifyCredentials()
+			return True
+		except TwitterError:
+			return False
+
+	def get_name(self):
+		return self.api.VerifyCredentials().AsDict().get('screen_name')
+
+
+
+		
 class TweetsParser(object):
 	def __init__(self):
 		self.tweets = self.get_tweets()
 		self.review = list()
 		self.tweets_df = pd.DataFrame()
+		self.IDs = list()
 
 	def get_tweets(self):
 		
@@ -91,6 +111,28 @@ class TweetsParser(object):
 	def make_csv(self):
 		self.tweets_df.to_csv('./review.csv')
 
+	def delete_tweets(self):
+		s = Destroyer()
+
+		print(' -> Connecting with Twitter . . .')
+		if s.verify():
+			print(' -> Logged in as', s.get_name())
+		else:
+			print('Login Failed!')
+
+		# Compile all the ids to be deleted in a list
+		self.IDs = tp.tweets_df['ID'].tolist()
+
+		print(3*' ', 77*'_', '\n')
+		
+		for id in self.IDs[:10]:
+			
+			tweet_text = s.api.GetStatus(id).AsDict().get('text').replace('\n', ' \\n ')
+			
+			print(3*' ', 'Deleteing:', tweet_text[:65], end='\r', flush=True)
+			sleep(2)
+
+		print()
 
 if __name__=='__main__':
 	os.system('clear')
@@ -154,7 +196,9 @@ if __name__=='__main__':
 		choice2 = input(4*' '+'Are you sure, you want to delete all the tweets in "review.csv" (yes/no): ')
 
 		if choice2.lower() == 'yes':
-			delete_tweets()
+			print(3*' ', 77*'_', '\n')
+
+			tp.delete_tweets()
 			
 			print(3*' ', 77*'_', '\n')
 			print(22*' ', f'Successfully deleted: {len(tp.review)} Tweets.')
