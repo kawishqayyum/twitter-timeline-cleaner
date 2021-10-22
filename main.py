@@ -1,9 +1,9 @@
-import twitter
 import io
-import json
-import pandas as pd
 import os
 import sys
+import json
+import twitter
+import pandas as pd
 
 from twitter.error import TwitterError
 from time import sleep
